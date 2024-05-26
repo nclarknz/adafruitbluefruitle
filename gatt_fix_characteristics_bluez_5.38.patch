@@ -1,0 +1,24 @@
+diff --git a/Adafruit_BluefruitLE/bluez_dbus/gatt.py b/Adafruit_BluefruitLE/bluez_dbus/gatt.py
+index ab66a3a..1924e40 100644
+--- a/Adafruit_BluefruitLE/bluez_dbus/gatt.py
++++ b/Adafruit_BluefruitLE/bluez_dbus/gatt.py
+@@ -41,6 +41,8 @@ class BluezGattService(GattService):
+         """Create an instance of the GATT service from the provided bluez
+         DBus object.
+         """
++        self._obj = dbus_obj
++        self._service = dbus.Interface(dbus_obj, _SERVICE_INTERFACE)
+         self._props = dbus.Interface(dbus_obj, 'org.freedesktop.DBus.Properties')
+ 
+     @property
+@@ -52,9 +54,9 @@ class BluezGattService(GattService):
+         """Return list of GATT characteristics that have been discovered for this
+         service.
+         """
+-        paths = self._props.Get(_SERVICE_INTERFACE, 'Characteristics')
+-        return map(BluezGattCharacteristic,
+-                   get_provider()._get_objects_by_path(paths))
++        return map(BluezGattCharacteristic, 
++            get_provider()._get_objects(_CHARACTERISTIC_INTERFACE, 
++                                        self._service.object_path))
+ 
